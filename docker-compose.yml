@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  postgres-db:
+    image: postgres:14.2-alpine
+    container_name: mah-postgres
+    restart: always
+    environment:
+      - 'POSTGRES_USER=${DB_USER}'
+      - 'POSTGRES_PASSWORD=${DB_PASSWORD}'
+      - 'POSTGRES_DB=${DB_NAME}'
+    ports:
+      - '${DB_PORT}:5432'
+    volumes:
+      - './postgres/data:/var/lib/postgresql/data'
+
+volumes:
+  mah-db: {}
