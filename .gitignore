@@ -103,4 +103,6 @@ fabric.properties
 /.idea
 
 /target
-personal-shopper-mah-firebase-adminsdk-5cbz3-b0f82d91c3.json
+.env
+
+src/main/resources/application.yaml
