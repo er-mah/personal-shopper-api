@@ -1,8 +1,8 @@
 package com.mah.personalshopper.controller;
 
+import com.mah.personalshopper.dto.OwnerDto;
 import com.mah.personalshopper.dto.ResponseDto;
 import com.mah.personalshopper.dto.VehicleDto;
-import com.mah.personalshopper.model.Vehicle;
 import com.mah.personalshopper.service.VehicleService;
 import com.mah.personalshopper.util.ControllerConstants;
 
@@ -24,7 +24,13 @@ public class VehicleController {
     )
     @PostMapping("")
     public ResponseEntity<ResponseDto<VehicleDto>> addNewVehicle(@RequestBody VehicleDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createVehicle(dto));
+    }
+
+    @PostMapping("/{vehicleId}/owner")
+    public ResponseEntity<ResponseDto<VehicleDto>> addOwner(@PathVariable Long vehicleId,
+                                                            @RequestBody OwnerDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.addVehicleOwner(vehicleId, dto));
     }
 
 }

@@ -12,6 +12,7 @@ public interface VehicleMapper {
     VehicleMapper INSTANCE = Mappers.getMapper(VehicleMapper.class);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "owner", ignore = true)
     Vehicle dtoToVehicle(VehicleDto dto);      // Ignores the id clause if parsed from a json
 
     VehicleDto vehicleToDto(Vehicle entity);
