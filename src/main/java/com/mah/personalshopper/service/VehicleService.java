@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class VehicleService {
@@ -41,7 +42,7 @@ public class VehicleService {
 
     }
 
-    public ResponseDto<VehicleDto> addVehicleOwner(Long vehicleId, OwnerDto dto) throws RuntimeException {
+    public ResponseDto<VehicleDto> addVehicleOwner(UUID vehicleId, OwnerDto dto) throws RuntimeException {
         try {
             Optional<Vehicle> vehicle = vehicleRepository.findById(vehicleId);
 

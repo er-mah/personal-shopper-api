@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -18,7 +19,7 @@ public class Owner implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
-    private Long id;
+    private UUID id;
 
     @Column(nullable = false)
     private String fullName;

@@ -10,6 +10,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping(ControllerConstants.VEHICLE)
 public class VehicleController {
@@ -28,7 +30,7 @@ public class VehicleController {
     }
 
     @PostMapping("/{vehicleId}/owner")
-    public ResponseEntity<ResponseDto<VehicleDto>> addOwner(@PathVariable Long vehicleId,
+    public ResponseEntity<ResponseDto<VehicleDto>> addOwner(@PathVariable UUID vehicleId,
                                                             @RequestBody OwnerDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.addVehicleOwner(vehicleId, dto));
     }
