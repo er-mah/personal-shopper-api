@@ -1,7 +1,7 @@
 package com.mah.personalshopper.model;
 
+import com.mah.personalshopper.model.enums.DeclaredState;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -27,10 +27,7 @@ public class Vehicle implements Serializable {
     private Long year;
 
     @Column(nullable = false)
-    private Brand brand;
-
-    @Column(nullable = false)
-    private String licencePlate;
+    private String brand;
 
     @Column(nullable = false)
     private String model;
@@ -39,10 +36,10 @@ public class Vehicle implements Serializable {
     private String version;
 
     @Column(nullable = false)
-    private DeclaredState state;
+    private String licencePlate;
 
     @Column(nullable = false)
-    private Colour colour;
+    private String colour;
 
     @Column(nullable = false)
     private Double kilometers;
@@ -51,11 +48,16 @@ public class Vehicle implements Serializable {
     private Double sellingPrice;
 
     @Column(nullable = false)
-    private Integer sellingTime;
+    private Long saleTime;
+
+    @Column(nullable = false)
+    private DeclaredState state;
+
+    @Column(nullable = false)
+    private String comments;
 
     @CreatedDate
     private Date createdAt;
-    private String comments;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private Owner owner;

@@ -29,6 +29,8 @@ public class Owner implements Serializable {
 
     @Column(nullable = false)
     private String tel;
+
+    @Column(nullable = false)
     private String address;
 
     @Column(nullable = false)

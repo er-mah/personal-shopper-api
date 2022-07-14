@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.UUID;
 
+// This service handles the data persistence of the vehicle and owner
 @Service
 public class VehicleService {
-
     private final VehicleRepository vehicleRepository;
     private final OwnerRepository ownerRepository;
     private final VehicleMapper vehicleMapper;

@@ -1,4 +1,4 @@
-package com.mah.personalshopper.model;
+package com.mah.personalshopper.model.enums;
 
 public enum DeclaredState {
 

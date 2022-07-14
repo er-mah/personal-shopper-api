@@ -1,8 +1,6 @@
 package com.mah.personalshopper.dto;
 
-import com.mah.personalshopper.model.Brand;
-import com.mah.personalshopper.model.Colour;
-import com.mah.personalshopper.model.DeclaredState;
+import com.mah.personalshopper.model.enums.DeclaredState;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,12 +12,12 @@ public class VehicleDto {
 
     String id;
     Long year;
-    Brand brand;
+    String brand;
     String licencePlate;
     String model;
     String version;
     DeclaredState state;
-    Colour colour;
+    String colour;
     Double kilometers;
     Double sellingPrice;
     Integer sellingTime;
