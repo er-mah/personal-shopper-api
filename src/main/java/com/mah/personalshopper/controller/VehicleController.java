@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@CrossOrigin("http://localhost:3000/")
 @RestController
 @RequestMapping(ControllerConstants.VEHICLE)
 public class VehicleController {
@@ -48,7 +49,7 @@ public class VehicleController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
     }
 
-    @PostMapping("/brands")
+    @GetMapping("/brands")
     public ResponseEntity<ResponseDto<List<Brand>>> getBrands() {
         ResponseDto<List<Brand>> responseDto = mahService.getBrands();
 
@@ -59,7 +60,7 @@ public class VehicleController {
     }
 
 
-    @PostMapping("/years")
+    @GetMapping("/years")
     public ResponseEntity<ResponseDto<List<Year>>> getYears(@RequestParam Integer brandId) {
 
         ResponseDto<List<Year>> responseDto = mahService.getYears(brandId);
@@ -70,7 +71,7 @@ public class VehicleController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
     }
 
-    @PostMapping("/models")
+    @GetMapping("/models")
     public ResponseEntity<ResponseDto<List<Model>>> getModels(@RequestParam Integer brandId,
                                                               @RequestParam Integer year) {
 
@@ -82,7 +83,7 @@ public class VehicleController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
     }
 
-    @PostMapping("/versions")
+    @GetMapping("/versions")
     public ResponseEntity<ResponseDto<List<Version>>> getVersions(@RequestParam Integer brandId,
                                                                   @RequestParam Integer year,
                                                                   @RequestParam Integer modelId) {
@@ -95,7 +96,7 @@ public class VehicleController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
     }
 
-    @PostMapping("/price")
+    @GetMapping("/price")
     public ResponseEntity<ResponseDto<Price>> getPrice(@RequestParam Integer year,
                                                        @RequestParam Integer versionId) {
 
