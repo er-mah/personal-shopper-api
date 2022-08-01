@@ -5,6 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Price {
 
     @JsonProperty("price")
-    String price;
+    public String price;
 
 }

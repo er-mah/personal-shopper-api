@@ -13,7 +13,7 @@ import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.mah.personalshopper.util.ControllerConstants.MAH_URI;
+import static com.mah.personalshopper.util.ControllerConstants.MAH_BASE_URI;
 
 @Service
 public class MahService {
@@ -22,8 +22,8 @@ public class MahService {
     ObjectMapper objectMapper;
 
     public MahService() {
-        this.client = HttpClient.newHttpClient();
         this.objectMapper = new ObjectMapper();
+        this.client = HttpClient.newHttpClient();
     }
 
     public ResponseDto<List<Brand>> getBrands() throws RuntimeException {
@@ -37,7 +37,7 @@ public class MahService {
 
             // Create request object
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(MAH_URI + "/brands"))
+                    .uri(URI.create(MAH_BASE_URI + "/brands"))
                     .POST(HttpRequest.BodyPublishers.ofString(payload))
                     .build();
 
@@ -64,7 +64,7 @@ public class MahService {
             String payload = objectMapper.writeValueAsString(values);
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(MAH_URI + "/years"))
+                    .uri(URI.create(MAH_BASE_URI + "/years"))
                     .POST(HttpRequest.BodyPublishers.ofString(payload))
                     .build();
 
@@ -82,7 +82,6 @@ public class MahService {
     public ResponseDto<List<Model>> getModel(Integer brandId, Integer year) {
 
         try {
-
             var values = new HashMap<String, String>() {{
                 put("estado", "usados");
                 put("marca", brandId.toString());
@@ -91,7 +90,7 @@ public class MahService {
             String payload = objectMapper.writeValueAsString(values);
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(MAH_URI + "/models"))
+                    .uri(URI.create(MAH_BASE_URI + "/models"))
                     .POST(HttpRequest.BodyPublishers.ofString(payload))
                     .build();
 
@@ -109,7 +108,6 @@ public class MahService {
     public ResponseDto<List<Version>> getVersions(Integer brandId, Integer year, Integer modelId) {
 
         try {
-
             var values = new HashMap<String, String>() {{
                 put("estado", "usados");
                 put("marca", brandId.toString());
@@ -119,7 +117,7 @@ public class MahService {
             String payload = objectMapper.writeValueAsString(values);
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(MAH_URI + "/versions"))
+                    .uri(URI.create(MAH_BASE_URI + "/versions"))
                     .POST(HttpRequest.BodyPublishers.ofString(payload))
                     .build();
 
@@ -134,29 +132,29 @@ public class MahService {
 
     }
 
-    public ResponseDto<Price> getPrice(Integer year, Integer versionId) {
+    public Double getPrice(Integer year, Integer versionId) {
 
         try {
-
             var values = new HashMap<String, String>() {{
-                put("estado", "usados");
+                put("estado", "usado");
                 put("anio", year.toString());
                 put("codia", versionId.toString());
             }};
             String payload = objectMapper.writeValueAsString(values);
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(MAH_URI + "/price"))
+                    .uri(URI.create(MAH_BASE_URI + "/price"))
                     .POST(HttpRequest.BodyPublishers.ofString(payload))
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             PriceMahDto priceMahDto = objectMapper.readValue(response.body(), PriceMahDto.class);
 
-            return new ResponseDto<>(HttpStatus.ACCEPTED, "", priceMahDto.data);
+            return Double.parseDouble(priceMahDto.data.price);
 
         } catch (Exception e) {
-            return new ResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR, e.toString(), null);
+            System.out.println(e.getMessage());
+            return null;
         }
 
     }
