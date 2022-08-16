@@ -5,8 +5,10 @@ import com.mah.personalshopper.dto.PriceRangeDto;
 import com.mah.personalshopper.dto.ResponseDto;
 import com.mah.personalshopper.model.constants.PriceConstants;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class VehicleService {
@@ -17,36 +19,71 @@ public class VehicleService {
         this.mahService = mahService;
     }
 
-    public ResponseDto<PriceRangeDto> getPriceRange(PriceInputDto dto) throws RuntimeException {
+    public static int getRoundedPrice(double price) {
 
-        Double priceFromApi = mahService.getPrice(dto.year, dto.versionId);
+        double priceQuotient = price / PriceConstants.roundValue;
+        return (int) priceQuotient * PriceConstants.roundValue;
+    }
+    public static List<Integer> getRandomAgenciesPrices(double min, double max, double finalResult) {
 
-        boolean sellingTimeFound = PriceConstants.availableSellingTime.containsKey(dto.sellingTime);
-        boolean colourFound = PriceConstants.colour.containsKey(dto.colour);
-        boolean kilometersFound = PriceConstants.kilometers.containsKey(dto.kilometers);
-        boolean stateFound = PriceConstants.state.containsKey(dto.state);
-
-        if (!(sellingTimeFound || colourFound || kilometersFound || stateFound)) {
-            return new ResponseDto<>(HttpStatus.BAD_REQUEST, "Invalid parameters", null);
+        List<Double> percentages = new ArrayList<>();
+        // Generate random percentages
+        for (int i = 0; i < 2; i++) {
+            percentages.add(((Math.random() * ((max - min) + 1)) + min) / 100);
         }
 
-        Double startingPerc = PriceConstants.startingPercentageDiscount;
-        Double sellingTimePerc = PriceConstants.availableSellingTime.get(dto.sellingTime);
-        Double colourPerc = PriceConstants.colour.get(dto.colour);
-        Double kilometersPerc = PriceConstants.kilometers.get(dto.kilometers);
-        Double statePerc = PriceConstants.state.get(dto.state);
+        // Generate random prices
+        List<Integer> prices = new ArrayList<>();
+        for (double p: percentages) {
+            double newPrice = finalResult - (finalResult * p);
+            prices.add(getRoundedPrice(newPrice));
+        }
 
-        double percentageSum = startingPerc + sellingTimePerc + colourPerc + kilometersPerc + statePerc;
-        Double finalPercentage = 1 + percentageSum;
+        return prices;
+    }
 
-        double finalResult = priceFromApi * finalPercentage;
+    public ResponseDto<PriceRangeDto> getPriceRange(PriceInputDto dto) throws RuntimeException, NullPointerException {
+        try {
 
-        Double minRangeValue = finalResult - finalResult * PriceConstants.rangeVariation;
-        Double maxRangeValue = finalResult + finalResult * PriceConstants.rangeVariation;
+            Double priceFromInfoautoApi = mahService.getPrice(dto.year, dto.versionId);
+            assert priceFromInfoautoApi != null;
 
-        PriceRangeDto rangeDto = new PriceRangeDto(minRangeValue, maxRangeValue);
+            boolean sellingTimeFound = PriceConstants.availableSellingTime.containsKey(dto.sellingTime);
+            boolean colourFound = PriceConstants.colour.containsKey(dto.colour);
+            boolean kilometersFound = PriceConstants.kilometers.containsKey(dto.kilometers);
+            boolean stateFound = PriceConstants.state.containsKey(dto.state);
 
-        return new ResponseDto<>(HttpStatus.ACCEPTED, "", rangeDto);
+            if (!(sellingTimeFound || colourFound || kilometersFound || stateFound)) {
+                return new ResponseDto<>(HttpStatus.BAD_REQUEST, "Invalid parameters", null);
+            }
 
+            Double startingPerc = PriceConstants.startingPercentageDiscount;
+            Double sellingTimePerc = PriceConstants.availableSellingTime.get(dto.sellingTime);
+            Double colourPerc = PriceConstants.colour.get(dto.colour);
+            Double kilometersPerc = PriceConstants.kilometers.get(dto.kilometers);
+            Double statePerc = PriceConstants.state.get(dto.state);
+
+            double percentageSum = startingPerc + sellingTimePerc + colourPerc + kilometersPerc + statePerc;
+            Double finalPercentage = 1 + percentageSum;
+
+            double finalResult = priceFromInfoautoApi * finalPercentage;
+
+            int minRangeValue = getRoundedPrice((finalResult - finalResult * PriceConstants.rangeVariation));
+            int maxRangeValue = getRoundedPrice((finalResult + finalResult * PriceConstants.rangeVariation));
+
+            List<Integer> prices = getRandomAgenciesPrices(
+                    PriceConstants.otherDealershipsMin,
+                    PriceConstants.otherDealershipsMax,
+                    priceFromInfoautoApi
+            );
+
+            PriceRangeDto rangeDto = new PriceRangeDto(minRangeValue, maxRangeValue, prices);
+
+            return new ResponseDto<>(HttpStatus.ACCEPTED, "", rangeDto);
+
+        } catch (Error e) {
+            System.out.println(e.getMessage());
+            return new ResponseDto<>(HttpStatus.BAD_REQUEST, e.getMessage(), null);
+        }
     }
 }

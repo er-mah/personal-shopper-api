@@ -10,6 +10,8 @@ public class SimplifiedCarAttributeDto {
     @JsonProperty("type")
     public String type;
 
+    @JsonProperty("value")
+    public String value;
     @JsonProperty("value_description")
     public String valueDescription;
 

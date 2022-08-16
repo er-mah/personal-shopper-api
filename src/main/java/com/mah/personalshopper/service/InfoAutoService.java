@@ -1,11 +1,9 @@
 package com.mah.personalshopper.service;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mah.personalshopper.dto.ResponseDto;
-import com.mah.personalshopper.dto.infoAuto.CarAttributeDto;
-import com.mah.personalshopper.dto.infoAuto.CarDetailsDto;
-import com.mah.personalshopper.dto.infoAuto.SimplifiedCarAttributeDto;
-import com.mah.personalshopper.dto.infoAuto.TokenDto;
+import com.mah.personalshopper.dto.infoAuto.*;
 import com.mah.personalshopper.mapper.CarAttributeMapper;
 import com.mah.personalshopper.util.MiscMethods;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Objects;
+import java.net.http.*;
+import java.util.*;
 
 import com.auth0.jwt.JWT;
 
@@ -44,6 +37,7 @@ public class InfoAutoService {
     public InfoAutoService(CarAttributeMapper carAttributeMapper) {
         this.carAttributeMapper = carAttributeMapper;
         this.objectMapper = new ObjectMapper();
+        this.objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         this.client = HttpClient.newHttpClient();
         this.tokens = null;
 
@@ -51,8 +45,7 @@ public class InfoAutoService {
 
 
     @Autowired
-    public void GetProperties(@Value("${info-auto.username}") String username,
-                                  @Value("${info-auto.password}") String password) {
+    public void GetProperties(@Value("${info-auto.username}") String username, @Value("${info-auto.password}") String password) {
         this.username = username;
         this.password = password;
     }
@@ -65,11 +58,7 @@ public class InfoAutoService {
 
     private TokenDto getTokens() throws IOException, InterruptedException {
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(INFOAUTO_AUTH_URI + "/login"))
-                .header("Authorization", getBasicAuthenticationHeader())
-                .POST(HttpRequest.BodyPublishers.noBody())
-                .build();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(INFOAUTO_AUTH_URI + "/login")).header("Authorization", getBasicAuthenticationHeader()).POST(HttpRequest.BodyPublishers.noBody()).build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         return objectMapper.readValue(response.body(), TokenDto.class);
@@ -78,11 +67,7 @@ public class InfoAutoService {
 
     private String getNewAccessToken() throws IOException, InterruptedException {
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(INFOAUTO_AUTH_URI  + "/refresh"))
-                .header("Authorization", "Bearer "+ this.tokens.refreshToken)
-                .POST(HttpRequest.BodyPublishers.noBody())
-                .build();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(INFOAUTO_AUTH_URI + "/refresh")).header("Authorization", "Bearer " + this.tokens.refreshToken).POST(HttpRequest.BodyPublishers.noBody()).build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         TokenDto tokensFromDto = objectMapper.readValue(response.body(), TokenDto.class);
@@ -90,13 +75,11 @@ public class InfoAutoService {
     }
 
 
-
     // This is going to be used
     public void setInfoAutoTokens() throws RuntimeException, IOException, InterruptedException {
 
         if (this.tokens != null) {
-            if (MiscMethods.checkIfJwtIsExpired(JWT.decode(this.tokens.accessToken)) &&
-                    !MiscMethods.checkIfJwtIsExpired(JWT.decode(this.tokens.refreshToken))) {
+            if (MiscMethods.checkIfJwtIsExpired(JWT.decode(this.tokens.accessToken)) && !MiscMethods.checkIfJwtIsExpired(JWT.decode(this.tokens.refreshToken))) {
                 // If refresh token is not expired
                 this.tokens.accessToken = getNewAccessToken();
             }
@@ -114,19 +97,15 @@ public class InfoAutoService {
             this.setInfoAutoTokens();
 
             // Create request object
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(INFOAUTO_BASE_URI + "/models/" + codia + "/features/"))
-                    .header("Authorization", "Bearer "+ this.tokens.accessToken)
-                    .GET()
-                    .build();
+            HttpRequest featuresRequests = HttpRequest.newBuilder().uri(URI.create(INFOAUTO_BASE_URI + "/models/" + codia + "/features/")).header("Authorization", "Bearer " + this.tokens.accessToken).GET().build();
 
             // Make request
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> featuresResponse = client.send(featuresRequests, HttpResponse.BodyHandlers.ofString());
 
-            if (response.statusCode() == 404) {
+            if (featuresResponse.statusCode() == 404) {
                 return new ResponseDto<>(HttpStatus.NOT_FOUND, "", null);
             }
-            CarAttributeDto[] detailedCarInfo = objectMapper.readValue(response.body(), CarAttributeDto[].class);
+            CarAttributeDto[] detailedCarInfo = objectMapper.readValue(featuresResponse.body(), CarAttributeDto[].class);
 
             List<SimplifiedCarAttributeDto> comfort = new ArrayList<>();
             List<SimplifiedCarAttributeDto> technicalInfo = new ArrayList<>();
@@ -134,7 +113,7 @@ public class InfoAutoService {
             List<SimplifiedCarAttributeDto> security = new ArrayList<>();
 
 
-            for (CarAttributeDto feature: detailedCarInfo) {
+            for (CarAttributeDto feature : detailedCarInfo) {
                 SimplifiedCarAttributeDto carAttr = carAttributeMapper.simpleToAttr(feature);
 
                 if (feature.category.equals("Confort")) {
@@ -151,8 +130,15 @@ public class InfoAutoService {
                 }
             }
 
-            CarDetailsDto detailsDto = new CarDetailsDto(comfort, technicalInfo, engineAndTransmission, security);
+            // Create request object
+            HttpRequest detailsRequest = HttpRequest.newBuilder().uri(URI.create(INFOAUTO_BASE_URI + "/models/" + codia)).header("Authorization", "Bearer " + this.tokens.accessToken).GET().build();
 
+            // Make request
+            HttpResponse<String> response = client.send(detailsRequest, HttpResponse.BodyHandlers.ofString());
+
+            ModelDto modelInfo = objectMapper.readValue(response.body(), ModelDto.class);
+
+            CarDetailsDto detailsDto = new CarDetailsDto(modelInfo.brand.name, modelInfo.description, modelInfo.url, comfort, technicalInfo, engineAndTransmission, security);
             return new ResponseDto<>(HttpStatus.ACCEPTED, "", detailsDto);
 
         } catch (Exception e) {
