@@ -1,7 +1,6 @@
 package com.mah.personalshopper.controller;
 
 import com.mah.personalshopper.dto.*;
-import com.mah.personalshopper.dto.infoAuto.CarAttributeDto;
 import com.mah.personalshopper.dto.infoAuto.CarDetailsDto;
 import com.mah.personalshopper.dto.mah.*;
 import com.mah.personalshopper.service.InfoAutoService;
@@ -10,12 +9,13 @@ import com.mah.personalshopper.service.VehicleService;
 import com.mah.personalshopper.util.ControllerConstants;
 
 import org.springframework.http.*;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 @CrossOrigin("*")
+@Validated
 @RestController
 @RequestMapping(ControllerConstants.VEHICLE)
 public class VehicleController {
@@ -28,7 +28,6 @@ public class VehicleController {
         this.vehicleService = vehicleService;
         this.infoAutoService = infoAutoService;
     }
-
 
 
     @GetMapping("/brands")
@@ -75,7 +74,7 @@ public class VehicleController {
     }
 
     @GetMapping("/{versionId}/details")
-    public ResponseEntity<ResponseDto<CarDetailsDto>> getDetailedInfo(@PathVariable("versionId") Integer versionId) throws IOException, InterruptedException {
+    public ResponseEntity<ResponseDto<CarDetailsDto>> getDetailedInfo(@PathVariable("versionId") Integer versionId) {
 
         ResponseDto<CarDetailsDto> responseDto = this.infoAutoService.getCarDetails(versionId);
 
@@ -86,10 +85,38 @@ public class VehicleController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
 
     }
+
     @PostMapping("/price")
     public ResponseEntity<ResponseDto<PriceRangeDto>> getPrice(@RequestBody PriceInputDto dto) {
 
         ResponseDto<PriceRangeDto> responseDto = vehicleService.getPriceRange(dto);
+
+        if (responseDto.getStatus() == HttpStatus.ACCEPTED) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseDto);
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
+    }
+
+    @PostMapping("/persist-form")
+    public ResponseEntity<ResponseDto<PriceRangeDto>> sendToPipedrive(@RequestBody PriceInputDto dto) {
+        /*
+        *
+        ResponseDto<PriceRangeDto> responseDto = vehicleService.getPriceRange(dto);
+
+        if (responseDto.getStatus() == HttpStatus.ACCEPTED) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseDto);
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
+        * */
+        return null;
+    }
+
+
+    // TODO: REFACTOR
+    @GetMapping("/dni")
+    public ResponseEntity<ResponseDto<Dni>> getDni(@RequestParam Long dni, @RequestParam String sex) {
+
+        ResponseDto<Dni> responseDto = mahService.getDni(dni, sex);
 
         if (responseDto.getStatus() == HttpStatus.ACCEPTED) {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseDto);

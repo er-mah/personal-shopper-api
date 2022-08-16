@@ -158,4 +158,29 @@ public class MahService {
         }
 
     }
+
+    public ResponseDto<Dni> getDni(Long dni, String sex) {
+
+        try {
+            var values = new HashMap<String, String>() {{
+                put("dni", dni.toString());
+                put("sexo", sex);
+            }};
+            String payload = objectMapper.writeValueAsString(values);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(MAH_BASE_URI + "/dni"))
+                    .POST(HttpRequest.BodyPublishers.ofString(payload))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            DniMahDto dniMahDto = objectMapper.readValue(response.body(), DniMahDto.class);
+
+            return new ResponseDto<>(HttpStatus.ACCEPTED, "", dniMahDto.data);
+
+        } catch (Exception e) {
+            return new ResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR, e.toString(), null);
+        }
+
+    }
 }
