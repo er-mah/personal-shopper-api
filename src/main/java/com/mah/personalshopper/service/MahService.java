@@ -30,7 +30,7 @@ public class MahService {
         try {
 
             // Define payload
-            var values = new HashMap<String, String>() {{
+            HashMap<String, String> values = new HashMap<>() {{
                 put("estado", "usados");
             }};
             String payload = objectMapper.writeValueAsString(values);
@@ -57,7 +57,7 @@ public class MahService {
 
         try {
 
-            var values = new HashMap<String, String>() {{
+            HashMap<String, String> values = new HashMap<>() {{
                 put("estado", "usados");
                 put("marca", brandId.toString());
             }};
@@ -82,7 +82,7 @@ public class MahService {
     public ResponseDto<List<Model>> getModel(Integer brandId, Integer year) {
 
         try {
-            var values = new HashMap<String, String>() {{
+            HashMap<String, String> values = new HashMap<>() {{
                 put("estado", "usados");
                 put("marca", brandId.toString());
                 put("anio", year.toString());
@@ -108,7 +108,7 @@ public class MahService {
     public ResponseDto<List<Version>> getVersions(Integer brandId, Integer year, Integer modelId) {
 
         try {
-            var values = new HashMap<String, String>() {{
+            HashMap<String, String> values = new HashMap<>() {{
                 put("estado", "usados");
                 put("marca", brandId.toString());
                 put("anio", year.toString());
@@ -135,7 +135,7 @@ public class MahService {
     public Double getPrice(Integer year, Integer versionId) {
 
         try {
-            var values = new HashMap<String, String>() {{
+            HashMap<String, String> values = new HashMap<>() {{
                 put("estado", "usado");
                 put("anio", year.toString());
                 put("codia", versionId.toString());
@@ -162,7 +162,7 @@ public class MahService {
     public ResponseDto<Dni> getDni(Long dni, String sex) {
 
         try {
-            var values = new HashMap<String, String>() {{
+            HashMap<String, String> values = new HashMap<>() {{
                 put("dni", dni.toString());
                 put("sexo", sex);
             }};
