@@ -23,5 +23,7 @@ public class PriceInputDto {
     public String sellingTime;
     @NotNull
     public String colour;
+    @NotNull
+    public String age;
 
 }

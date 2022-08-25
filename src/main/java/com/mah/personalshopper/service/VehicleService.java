@@ -25,21 +25,25 @@ public class VehicleService {
         double priceQuotient = price / PriceConstants.roundValue;
         return (int) priceQuotient * PriceConstants.roundValue;
     }
-    public static List<Integer> getRandomAgenciesPrices(double min, double max, double finalResult) {
+    public static List<Integer> getRandomAgenciesPrices(ArrayList<Double> percentages, double infoAutoPrice) {
 
-        List<Double> percentages = new ArrayList<>();
+        // We only sum the negative values
+        double percentageSum = -0.25;
+
         // Generate random percentages
-        for (int i = 0; i < 2; i++) {
-            percentages.add(((Math.random() * ((max - min) + 1)) + min) / 100);
+        for (Double perc: percentages) {
+            if (perc < 0.0) {
+                percentageSum = percentageSum + perc;
+            }
         }
+
+        double percent1 = percentageSum - 0.025;
+        double percent2 = percentageSum - 0.005;
 
         // Generate random prices
         List<Integer> prices = new ArrayList<>();
-        for (double p: percentages) {
-            double newPrice = finalResult - (finalResult * p);
-            prices.add(getRoundedPrice(newPrice));
-        }
-
+        prices.add(getRoundedPrice(infoAutoPrice + infoAutoPrice * percent1));
+        prices.add(getRoundedPrice(infoAutoPrice + infoAutoPrice * percent2));
         return prices;
     }
 
@@ -53,18 +57,28 @@ public class VehicleService {
             boolean colourFound = PriceConstants.colour.containsKey(dto.colour);
             boolean kilometersFound = PriceConstants.kilometers.containsKey(dto.kilometers);
             boolean stateFound = PriceConstants.state.containsKey(dto.state);
+            boolean ageFound = PriceConstants.age.containsKey(dto.age);
 
-            if (!(sellingTimeFound || colourFound || kilometersFound || stateFound)) {
+            if (!(sellingTimeFound || colourFound || kilometersFound || stateFound || ageFound)) {
                 return new ResponseDto<>(HttpStatus.BAD_REQUEST, "Invalid parameters", null);
             }
 
             Double startingPerc = PriceConstants.startingPercentageDiscount;
+
             Double sellingTimePerc = PriceConstants.availableSellingTime.get(dto.sellingTime);
             Double colourPerc = PriceConstants.colour.get(dto.colour);
             Double kilometersPerc = PriceConstants.kilometers.get(dto.kilometers);
             Double statePerc = PriceConstants.state.get(dto.state);
+            Double agePerc = PriceConstants.state.get(dto.state);
 
-            double percentageSum = startingPerc + sellingTimePerc + colourPerc + kilometersPerc + statePerc;
+            ArrayList<Double> percentages = new ArrayList<Double>();
+            percentages.add(sellingTimePerc);
+            percentages.add(colourPerc);
+            percentages.add(kilometersPerc);
+            percentages.add(statePerc);
+            percentages.add(agePerc);
+
+            double percentageSum = startingPerc + sellingTimePerc + colourPerc + kilometersPerc + statePerc + agePerc;
             Double finalPercentage = 1 + percentageSum;
 
             double finalResult = priceFromInfoautoApi * finalPercentage;
@@ -73,8 +87,7 @@ public class VehicleService {
             int maxRangeValue = getRoundedPrice((finalResult + finalResult * PriceConstants.rangeVariation));
 
             List<Integer> prices = getRandomAgenciesPrices(
-                    PriceConstants.otherDealershipsMin,
-                    PriceConstants.otherDealershipsMax,
+                    percentages,
                     priceFromInfoautoApi
             );
 

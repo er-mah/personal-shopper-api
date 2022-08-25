@@ -6,8 +6,6 @@ public class PriceConstants {
 
     public static final Double rangeVariation = 0.05;
     public static final Double startingPercentageDiscount = -0.25;
-    public static final Double otherDealershipsMin = 20.0;
-    public static final Double otherDealershipsMax = 25.0;
     public static final Integer roundValue = 1000;
 
 
@@ -20,6 +18,7 @@ public class PriceConstants {
         kilometers.put("50k-100k", 0.03);           // Between 50.000 and 100.000 kms made
         kilometers.put("-50k", 0.05);               // Less than 50.000 kms made
     }
+
     public static final HashMap<String, Double> availableSellingTime = new HashMap<>();
 
     static {
@@ -41,13 +40,22 @@ public class PriceConstants {
     }
 
     public static final HashMap<String, Double> colour = new HashMap<>();
-    static  {
+
+    static {
         colour.put("EXOTIC", -0.03);            // Other
         colour.put("RARE", 0.00);               // Blue, brown, beige
         colour.put("COMMON", 0.03);             // Gray, silver, black, red
         colour.put("MOST_COMMON", 0.05);        // White
     }
 
+    public static final HashMap<String, Double> age = new HashMap<>();
 
+    static {
+        age.put(">15", -0.05);
+        age.put("10-15", -0.03);
+        age.put("6-9", 0.00);
+        age.put("3-5", 0.01);
+        age.put("0-2", 0.02);
+    }
 
 }
