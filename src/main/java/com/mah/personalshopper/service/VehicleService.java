@@ -4,6 +4,7 @@ import com.mah.personalshopper.dto.PriceInputDto;
 import com.mah.personalshopper.dto.PriceRangeDto;
 import com.mah.personalshopper.dto.ResponseDto;
 import com.mah.personalshopper.model.constants.PriceConstants;
+import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +43,7 @@ public class VehicleService {
         return prices;
     }
 
-    public ResponseDto<PriceRangeDto> getPriceRange(PriceInputDto dto) throws RuntimeException, NullPointerException {
+    public ResponseDto<PriceRangeDto> getPriceRange(PriceInputDto dto) throws RuntimeException {
         try {
 
             Double priceFromInfoautoApi = mahService.getPrice(dto.year, dto.versionId);

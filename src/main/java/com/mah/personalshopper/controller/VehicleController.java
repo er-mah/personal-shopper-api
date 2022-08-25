@@ -88,7 +88,6 @@ public class VehicleController {
 
     @PostMapping("/price")
     public ResponseEntity<ResponseDto<PriceRangeDto>> getPrice(@RequestBody PriceInputDto dto) {
-
         ResponseDto<PriceRangeDto> responseDto = vehicleService.getPriceRange(dto);
 
         if (responseDto.getStatus() == HttpStatus.ACCEPTED) {

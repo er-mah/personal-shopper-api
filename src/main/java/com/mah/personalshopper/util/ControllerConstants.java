@@ -6,6 +6,7 @@ public class ControllerConstants {
     public static final String INFOAUTO_AUTH_URI = "https://api.infoauto.com.ar/cars/auth";
 
     public static final String VEHICLE = "/vehicle";
+    public static final String USER = "/user";
 
 
 
