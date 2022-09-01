@@ -1,0 +1,28 @@
+server:
+  port: 6060
+  servlet:
+    context-path: /v1/api
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+info-auto:
+  username: ''
+  password: ''
+  urls:
+    base: ''
+    auth: ''
+miautohoy:
+  urls:
+    base: ''
+pipedrive:
+  token: ''
+  urls:
+    base: ""
+  custom-field-hashes:
+    dni: ""
+    brand: ""
+    year: ""
+    model: ""
+    version: ""
+    input-channel: ""
