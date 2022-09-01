@@ -96,32 +96,4 @@ public class VehicleController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
     }
 
-    @PostMapping("/persist-form")
-    public ResponseEntity<ResponseDto<PriceRangeDto>> sendToPipedrive(@RequestBody PriceInputDto dto) {
-        /*
-        *
-        ResponseDto<PriceRangeDto> responseDto = vehicleService.getPriceRange(dto);
-
-        if (responseDto.getStatus() == HttpStatus.ACCEPTED) {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseDto);
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
-        * */
-        return null;
-    }
-
-
-    // TODO: REFACTOR
-    @GetMapping("/dni")
-    public ResponseEntity<ResponseDto<Dni>> getDni(@RequestParam Long dni, @RequestParam String sex) {
-
-        ResponseDto<Dni> responseDto = mahService.getDni(dni, sex);
-
-        if (responseDto.getStatus() == HttpStatus.ACCEPTED) {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseDto);
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
-    }
-
-
 }
