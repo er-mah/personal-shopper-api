@@ -40,9 +40,6 @@ public class PersonalShopperInputDto {
     public String vehicleComments;
 
     @NotNull
-    public String saleType;
-
-    @NotNull
     public String saleCurrency;
 
     @NotNull
@@ -56,9 +53,6 @@ public class PersonalShopperInputDto {
 
     @NotNull
     public String saleQuotationRange;
-
-    @NotNull
-    public List<String> saleMechanicalRevisionDates;
 
     @NotNull
     public String ownerSex;
