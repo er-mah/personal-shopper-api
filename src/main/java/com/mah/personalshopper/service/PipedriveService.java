@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mah.personalshopper.dto.PersonalShopperInputDto;
 import com.mah.personalshopper.dto.ResponseDto;
+import com.mah.personalshopper.dto.RevisionDatesInputDto;
+import com.mah.personalshopper.dto.SaleTypeInputDto;
 import com.mah.personalshopper.dto.pipedrive.*;
 import com.mah.personalshopper.util.MiscMethods;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -293,14 +295,14 @@ public class PipedriveService {
         }
     }
 
-    public ResponseDto<Object> persistPersonalShopperData(PersonalShopperInputDto dto) {
+    public ResponseDto<Deal> persistPersonalShopperData(PersonalShopperInputDto dto) {
 
         try {
             Long pipelineId = 0L;
             Long stageId = 0L;
             Long personId = 0L;
             Long dealId = 0L;
-            String dealTitle = dto.saleType + " " + dto.vehicleBrand + " " + dto.vehicleVersion;
+            String dealTitle = dto.vehicleBrand + " " + dto.vehicleVersion;
 
             Pipeline[] pipelines = this.getAllPipelines();
 
@@ -354,16 +356,14 @@ public class PipedriveService {
             assert deal != null;
             dealId = deal.id;
 
-            String content = "<b>"+ dto.saleType +" con " + MiscMethods.capitalizeFirstLetterOfEachWord(dto.ownerName) + "</b>" +
+            String content = "<b>Trato con " + MiscMethods.capitalizeFirstLetterOfEachWord(dto.ownerName) + "</b>" +
                     "<br><br>⚠️ Verificar que los datos del contacto coincidan con el contacto anexado al deal/trato<br><br>" +
                     "<br><br><u>Datos de la venta</u>: <div><ul>" +
-                    "<li>Modalidad de venta: "+ dto.saleType +"&nbsp;</li>" +
                     "<li>Cantidad solicitada por el cliente: "+ dto.saleRequestedAmount +"&nbsp;</li>" +
                     "<li>Moneda: "+ dto.saleCurrency +"&nbsp;</li>" +
                     "<li>Urgencia: "+ dto.saleUrgency +"&nbsp;</li>" +
                     "<li>Valor base de cotización: "+ dto.saleBaseQuotationValue +"&nbsp;</li>" +
                     "<li>Rango ofrecido al cliente: "+ dto.saleQuotationRange +"&nbsp;</li>" +
-                    "<li>Disponibilidad para revisión mecánica: "+ dto.saleMechanicalRevisionDates +"&nbsp;</li>" +
                     "<br>" +
                     "</ul><br><u>Datos del dueño</u>:<br><ul>" +
                     "<li>Sexo: "+ dto.ownerSex +"&nbsp;</li>" +
@@ -385,7 +385,31 @@ public class PipedriveService {
                     "<li>Comentarios adicionales: "+ dto.vehicleComments +"&nbsp;</li>" +
                     "</ul></div>";
             this.addNoteToDeal(content, dealId);
-            return new ResponseDto<>(HttpStatus.CREATED, "Personal shopper data sucessfully stored.", null);
+            return new ResponseDto<>(HttpStatus.CREATED, "Personal shopper data sucessfully stored.", deal);
+
+        } catch (Exception e) {
+            return new ResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR, e.toString(), null);
+        }
+    }
+
+    public ResponseDto<Object> addRevisionDatesToDeal(RevisionDatesInputDto dto, Long dealId) {
+
+        try {
+            String content = "<b>Disponibilidad para revisión mecánica: </b>"+ dto.saleMechanicalRevisionDates;
+            this.addNoteToDeal(content, dealId);
+            return new ResponseDto<>(HttpStatus.CREATED, "Dates stored in deal.", null);
+
+        } catch (Exception e) {
+            return new ResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR, e.toString(), null);
+        }
+    }
+
+    public ResponseDto<Object> addSelectedSaleType(SaleTypeInputDto dto, Long dealId) {
+
+        try {
+            String content = "<b>Tipo de venta seleccionado por el cliente: </b>"+ dto.saleType;
+            this.addNoteToDeal(content, dealId);
+            return new ResponseDto<>(HttpStatus.CREATED, "Sale type stored in deal.", null);
 
         } catch (Exception e) {
             return new ResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR, e.toString(), null);

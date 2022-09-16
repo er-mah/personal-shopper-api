@@ -1,8 +1,6 @@
 package com.mah.personalshopper.controller;
 
-import com.mah.personalshopper.dto.PersonalShopperInputDto;
-import com.mah.personalshopper.dto.PriceRangeDto;
-import com.mah.personalshopper.dto.ResponseDto;
+import com.mah.personalshopper.dto.*;
 import com.mah.personalshopper.dto.pipedrive.*;
 import com.mah.personalshopper.service.PipedriveService;
 import com.mah.personalshopper.util.ControllerConstants;
@@ -24,10 +22,33 @@ public class PersonalShopperController {
         this.service = service;
     }
 
-    @PostMapping("/persist-form")
-    public ResponseEntity<ResponseDto<Object>> persistFormInCRM(@RequestBody PersonalShopperInputDto dto) {
+    @PostMapping("/persist-deal")
+    public ResponseEntity<ResponseDto<Deal>> persistDealInCRM(@RequestBody PersonalShopperInputDto dto) {
 
-        ResponseDto<Object> responseDto = service.persistPersonalShopperData(dto);
+        ResponseDto<Deal> responseDto = service.persistPersonalShopperData(dto);
+
+        if (responseDto.getStatus() == HttpStatus.CREATED) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
+    }
+
+
+    @PostMapping("/{dealId}/revision-dates")
+    public ResponseEntity<ResponseDto<Object>> addRevisionDatesToDeal(@RequestBody RevisionDatesInputDto dto, @PathVariable Long dealId) {
+
+        ResponseDto<Object> responseDto = service.addRevisionDatesToDeal(dto, dealId);
+
+        if (responseDto.getStatus() == HttpStatus.CREATED) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
+    }
+
+    @PostMapping("/{dealId}/sale-type")
+    public ResponseEntity<ResponseDto<Object>> addSaleTypeToDeal(@RequestBody SaleTypeInputDto dto, @PathVariable Long dealId) {
+
+        ResponseDto<Object> responseDto = service.addSelectedSaleType(dto, dealId);
 
         if (responseDto.getStatus() == HttpStatus.CREATED) {
             return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
