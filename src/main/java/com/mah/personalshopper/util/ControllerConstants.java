@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ControllerConstants {
-    @Value("${miautohoy.urls.base}")
-    public static String MAH_BASE_URI;
+    @Value("${techmo.urls.base}")
+    public static String TECHMO_BASE_URI;
     @Value("${info-auto.urls.base}")
     public static String INFOAUTO_BASE_URI;
     @Value("${info-auto.urls.auth}")
@@ -35,7 +35,7 @@ public class ControllerConstants {
 
     @Autowired
     public void GetProperties(
-            @Value("${miautohoy.urls.base}") String mahBase,
+            @Value("${techmo.urls.base}") String mahBase,
             @Value("${info-auto.urls.base}") String infoAutoBase,
             @Value("${info-auto.urls.auth}") String infoAutoAuth,
             @Value("${pipedrive.urls.base}") String pipedriveBase,
@@ -46,7 +46,7 @@ public class ControllerConstants {
             @Value("${pipedrive.custom-field-hashes.version}") String versionHash,
             @Value("${pipedrive.custom-field-hashes.input-channel}") String inputChannel
     ) {
-        MAH_BASE_URI = mahBase;
+        TECHMO_BASE_URI = mahBase;
         INFOAUTO_BASE_URI = infoAutoBase;
         INFOAUTO_AUTH_URI = infoAutoAuth;
         PIPEDRIVE_BASE_URI = pipedriveBase;

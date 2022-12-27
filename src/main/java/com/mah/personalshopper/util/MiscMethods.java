@@ -9,8 +9,7 @@ import java.util.stream.Collectors;
 public class MiscMethods {
 
     public static boolean checkIfJwtIsExpired(DecodedJWT jwt) {
-
-        return jwt.getExpiresAt().before(new Date());
+        return jwt.getExpiresAt().before(new Date()); // if true, it is expired
     }
 
     public static String capitalizeFirstLetterOfEachWord(String message) {

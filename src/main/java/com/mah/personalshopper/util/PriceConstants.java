@@ -1,4 +1,4 @@
-package com.mah.personalshopper.model.constants;
+package com.mah.personalshopper.util;
 
 import java.util.HashMap;
 
