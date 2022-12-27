@@ -16,12 +16,12 @@ import java.util.List;
 import static com.mah.personalshopper.util.ControllerConstants.MAH_BASE_URI;
 
 @Service
-public class MahService {
+public class TechMoService {
 
     HttpClient client;
     ObjectMapper objectMapper;
 
-    public MahService() {
+    public TechMoService() {
         this.objectMapper = new ObjectMapper();
         this.client = HttpClient.newHttpClient();
     }

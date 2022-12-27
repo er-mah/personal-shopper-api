@@ -1,10 +1,8 @@
-package com.mah.personalshopper.dto.mah;
+package com.mah.personalshopper.dto.techmo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
-
-public class YearMahDto {
+public class DniTechmoDto {
 
     @JsonProperty("status")
     public String status;
@@ -13,5 +11,5 @@ public class YearMahDto {
     public String message;
 
     @JsonProperty("data")
-    public List<Year> data;
+    public Dni data;
 }

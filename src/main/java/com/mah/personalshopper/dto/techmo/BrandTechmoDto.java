@@ -1,13 +1,10 @@
-package com.mah.personalshopper.dto.mah;
+package com.mah.personalshopper.dto.techmo;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.mah.personalshopper.dto.mah.Brand;
 
 import java.util.List;
 
-public class BrandMahDto {
+public class BrandTechmoDto {
 
     @JsonProperty("status")
     public String status;

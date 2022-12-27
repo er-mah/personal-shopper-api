@@ -1,8 +1,10 @@
-package com.mah.personalshopper.dto.mah;
+package com.mah.personalshopper.dto.techmo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class PriceMahDto {
+import java.util.List;
+
+public class VersionTechmoDto {
 
     @JsonProperty("status")
     public String status;
@@ -11,5 +13,5 @@ public class PriceMahDto {
     public String message;
 
     @JsonProperty("data")
-    public Price data;
+    public List<Version> data;
 }

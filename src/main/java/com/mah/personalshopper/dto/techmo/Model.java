@@ -1,12 +1,12 @@
-package com.mah.personalshopper.dto.mah;
+package com.mah.personalshopper.dto.techmo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Brand {
+public class Model {
 
     @JsonProperty("id")
     Long id = null;
 
     @JsonProperty("name")
-    String brand = null;
+    String model = null;
 }
