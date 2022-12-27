@@ -3,7 +3,7 @@ package com.techmo.personalshopper.service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techmo.personalshopper.dto.ResponseDto;
-import com.mah.personalshopper.dto.infoAuto.*;
+import com.techmo.personalshopper.dto.infoAuto.*;
 import com.techmo.personalshopper.dto.infoAuto.*;
 import com.techmo.personalshopper.mapper.CarAttributeMapper;
 import com.techmo.personalshopper.util.MiscMethods;

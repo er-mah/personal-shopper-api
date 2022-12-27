@@ -1,7 +1,7 @@
 package com.techmo.personalshopper.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mah.personalshopper.dto.techmo.*;
+import com.techmo.personalshopper.dto.techmo.*;
 import com.techmo.personalshopper.dto.ResponseDto;
 import com.techmo.personalshopper.dto.techmo.*;
 import com.techmo.personalshopper.util.ControllerConstants;

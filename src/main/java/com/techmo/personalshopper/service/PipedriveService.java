@@ -6,7 +6,7 @@ import com.techmo.personalshopper.dto.PersonalShopperInputDto;
 import com.techmo.personalshopper.dto.ResponseDto;
 import com.techmo.personalshopper.dto.RevisionDatesInputDto;
 import com.techmo.personalshopper.dto.SaleTypeInputDto;
-import com.mah.personalshopper.dto.pipedrive.*;
+import com.techmo.personalshopper.dto.pipedrive.*;
 import com.techmo.personalshopper.util.MiscMethods;
 import com.techmo.personalshopper.dto.pipedrive.*;
 import com.techmo.personalshopper.util.ControllerConstants;

@@ -13,10 +13,10 @@ import java.util.List;
 @Service
 public class VehicleService {
 
-    TechMoService mahService;
+    TechMoService techMoService;
 
-    public VehicleService(TechMoService mahService) {
-        this.mahService = mahService;
+    public VehicleService(TechMoService techMoService) {
+        this.techMoService = techMoService;
     }
 
     public static int getRoundedPrice(double price) {
@@ -49,7 +49,7 @@ public class VehicleService {
     public ResponseDto<PriceRangeDto> getPriceRange(PriceInputDto dto) throws RuntimeException {
         try {
 
-            Double priceFromInfoautoApi = mahService.getPrice(dto.year, dto.versionId);
+            Double priceFromInfoautoApi = techMoService.getPrice(dto.year, dto.versionId);
             assert priceFromInfoautoApi != null;
 
             boolean sellingTimeFound = PriceConstants.availableSellingTime.containsKey(dto.sellingTime);

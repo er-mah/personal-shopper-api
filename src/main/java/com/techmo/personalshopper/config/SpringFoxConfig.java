@@ -24,7 +24,7 @@ public class SpringFoxConfig {
         return new ApiInfo(
                 "Personal Shopper REST API",
                 null,
-                "1.0",
+                "1.1",
                 "Free to use",
                 new springfox.documentation.service.Contact(null, null, null),
                 null,

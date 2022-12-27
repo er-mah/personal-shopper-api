@@ -1,8 +1,6 @@
 package com.techmo.personalshopper.controller;
 
-import com.mah.personalshopper.dto.*;
 import com.techmo.personalshopper.dto.infoAuto.CarDetailsDto;
-import com.mah.personalshopper.dto.techmo.*;
 import com.techmo.personalshopper.service.InfoAutoService;
 import com.techmo.personalshopper.service.TechMoService;
 import com.techmo.personalshopper.service.VehicleService;

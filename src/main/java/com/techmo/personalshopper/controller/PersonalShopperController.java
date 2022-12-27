@@ -1,7 +1,7 @@
 package com.techmo.personalshopper.controller;
 
-import com.mah.personalshopper.dto.*;
-import com.mah.personalshopper.dto.pipedrive.*;
+import com.techmo.personalshopper.dto.*;
+import com.techmo.personalshopper.dto.pipedrive.*;
 import com.techmo.personalshopper.dto.pipedrive.Deal;
 import com.techmo.personalshopper.service.PipedriveService;
 import com.techmo.personalshopper.util.ControllerConstants;
