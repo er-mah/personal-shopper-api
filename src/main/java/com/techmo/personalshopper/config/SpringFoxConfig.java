@@ -15,7 +15,7 @@ public class SpringFoxConfig {
     public Docket swaggerConfiguration() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.mah.personalshopper"))
+                .apis(RequestHandlerSelectors.basePackage("com.techmo.personalshopper"))
                 .build()
                 .apiInfo(getApiDetails());
     }

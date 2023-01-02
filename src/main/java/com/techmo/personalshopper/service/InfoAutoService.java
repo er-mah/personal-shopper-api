@@ -108,6 +108,9 @@ public class InfoAutoService {
 
             if (featuresResponse.statusCode() == 404 || featuresResponse.statusCode() == 500) {
                 return new ResponseDto<>(HttpStatus.NOT_FOUND, "", null);
+            } else if (featuresResponse.statusCode() != 200) {
+                this.tokens = getNewTokens();
+                getCarDetails(codia);
             }
             CarAttributeDto[] detailedCarInfo = objectMapper.readValue(featuresResponse.body(), CarAttributeDto[].class);
 
@@ -149,7 +152,6 @@ public class InfoAutoService {
             return new ResponseDto<>(HttpStatus.ACCEPTED, "", detailsDto);
 
         } catch (Exception e) {
-            this.tokens = getNewTokens();
             return new ResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR, e.toString(), null);
         }
 
