@@ -8,7 +8,6 @@ import com.techmo.personalshopper.dto.RevisionDatesInputDto;
 import com.techmo.personalshopper.dto.SaleTypeInputDto;
 import com.techmo.personalshopper.dto.pipedrive.*;
 import com.techmo.personalshopper.util.MiscMethods;
-import com.techmo.personalshopper.dto.pipedrive.*;
 import com.techmo.personalshopper.util.ControllerConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -154,16 +153,10 @@ public class PipedriveService {
         }
     }
 
-    public Person getPersonByTerm(String term, String type) {
+    public Person getPersonByName(String name) {
         try {
 
-            // By DNI
-            URI url = URI.create(ControllerConstants.PIPEDRIVE_BASE_URI + "/persons/search?api_token=" + token + "&term=" + term + "&fields=custom_fields");
-
-            // By name
-            if (type.equals("name")) {
-                url = URI.create(ControllerConstants.PIPEDRIVE_BASE_URI + "/persons/search?api_token=" + token + "&term=" + term + "&fields=name");
-            }
+            URI url = URI.create(ControllerConstants.PIPEDRIVE_BASE_URI + "/persons/search?api_token=" + token + "&term=" + name + "&fields=name");
 
             String bearerToken = "Bearer " + getToken();
 
@@ -222,6 +215,7 @@ public class PipedriveService {
             return null;
         }
     }
+
 
     public Deal createDeal(String title, Long personId, Long stageId, String vehicleBrand, Integer vehicleYear, String vehicleModel, String vehicleVersion) {
         try {
@@ -342,10 +336,7 @@ public class PipedriveService {
             }
 
             // Get person by name
-            Person person = this.getPersonByTerm(dto.ownerName, "name");
-            if (person == null) {
-                person = this.getPersonByTerm(dto.ownerDni, "dni");
-            }
+            Person person = this.getPersonByName(dto.ownerName);
             if (person == null) {
                 person = this.createPerson(dto.ownerName, dto.ownerEmail, dto.ownerPhone, dto.ownerDni);
             }
@@ -410,6 +401,11 @@ public class PipedriveService {
             String content = "<b>Tipo de venta seleccionado por el cliente: </b>"+ dto.saleType;
             this.addNoteToDeal(content, dealId);
             return new ResponseDto<>(HttpStatus.CREATED, "Sale type stored in deal.", null);
+
+        } catch (Exception e) {
+            return new ResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR, e.toString(), null);
+        }
+    }
 
     public ResponseDto<Object> deleteDeal(Long dealId) {
         try {
