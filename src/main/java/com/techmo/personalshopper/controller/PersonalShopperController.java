@@ -60,4 +60,14 @@ public class PersonalShopperController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
     }
 
+    @DeleteMapping("/{dealId}")
+    public ResponseEntity<ResponseDto<Object>> deleteDeal(@PathVariable Long dealId) {
+
+        ResponseDto<Object> responseDto = service.deleteDeal(dealId);
+
+        if (responseDto.getStatus() == HttpStatus.OK) {
+            return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
+    }
 }
