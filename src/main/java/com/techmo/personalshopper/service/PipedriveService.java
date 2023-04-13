@@ -411,6 +411,24 @@ public class PipedriveService {
             this.addNoteToDeal(content, dealId);
             return new ResponseDto<>(HttpStatus.CREATED, "Sale type stored in deal.", null);
 
+    public ResponseDto<Object> deleteDeal(Long dealId) {
+        try {
+
+            URI url = URI.create(ControllerConstants.PIPEDRIVE_BASE_URI + "/deals/"+ dealId + "?api_token=" + token);
+            String bearerToken = "Bearer " + getToken();
+
+            // Create request object
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(url)
+                    .DELETE()
+                    .header("Authorization", bearerToken)
+                    .header("Content-Type", "application/json")
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            return new ResponseDto<>(HttpStatus.OK, "Deal successfully deleted", response.body());
+
         } catch (Exception e) {
             return new ResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR, e.toString(), null);
         }
