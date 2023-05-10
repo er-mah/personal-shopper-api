@@ -107,7 +107,7 @@ public class VehicleController {
 
 
     @GetMapping("/prices/{vehicleType}/{codia}/details")
-    public ResponseEntity<ResponseDto<CarPriceDto[]>> getPrice(@PathVariable("codia") Integer codia, @PathVariable("vehicleType") String vehicleType) throws IOException, InterruptedException {
+    public ResponseEntity<ResponseDto<CarPriceDto[]>> getInfoAutoPrices(@PathVariable("codia") Integer codia, @PathVariable("vehicleType") String vehicleType) throws IOException, InterruptedException {
         ResponseDto<CarPriceDto[]> responseDto;
         if (Objects.equals(vehicleType, "new-vehicle")) {
             responseDto = this.infoAutoService.getModelBasePrices(false, codia);
@@ -117,6 +117,10 @@ public class VehicleController {
 
         if (responseDto.getStatus() == HttpStatus.ACCEPTED) {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseDto);
+        }
+
+        if (responseDto.getStatus() == HttpStatus.NOT_FOUND) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDto);
         }
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);

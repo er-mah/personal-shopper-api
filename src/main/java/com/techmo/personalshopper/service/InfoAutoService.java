@@ -55,102 +55,117 @@ public class InfoAutoService {
     }
 
     private TokenDto getNewTokens() throws IOException, InterruptedException {
-
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(ControllerConstants.INFOAUTO_AUTH_URI + "/login")).header("Authorization", getBasicAuthenticationHeader()).POST(HttpRequest.BodyPublishers.noBody()).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(ControllerConstants.INFOAUTO_AUTH_URI + "/login"))
+                .header("Authorization", getBasicAuthenticationHeader())
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         return objectMapper.readValue(response.body(), TokenDto.class);
     }
 
-
     private String getNewAccessToken() throws IOException, InterruptedException {
-
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(ControllerConstants.INFOAUTO_AUTH_URI + "/refresh")).header("Authorization", "Bearer " + this.tokens.refreshToken).POST(HttpRequest.BodyPublishers.noBody()).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(ControllerConstants.INFOAUTO_AUTH_URI + "/refresh"))
+                .header("Authorization", "Bearer " + this.tokens.refreshToken)
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         TokenDto tokensFromDto = objectMapper.readValue(response.body(), TokenDto.class);
         return tokensFromDto.accessToken;
     }
 
-
     // This is going to be used
     public void setInfoAutoTokens() throws RuntimeException, IOException, InterruptedException {
-
-        if (this.tokens != null) {
-
-            // validate that access token is expired and refresh token is not expired
-            if (
-                    MiscMethods.checkIfJwtIsExpired(JWT.decode(this.tokens.accessToken)) &&
-                            !MiscMethods.checkIfJwtIsExpired(JWT.decode(this.tokens.refreshToken))
-            ) {
-                // get new access token w/ refresh token
-                this.tokens.accessToken = getNewAccessToken();
-                return;
+        try {
+            if (this.tokens != null) {
+                if (this.tokens.accessToken != null && this.tokens.refreshToken != null) { // check for null before decoding tokens
+                    // validate that access token is expired and refresh token is not expired
+                    if (
+                            MiscMethods.checkIfJwtIsExpired(JWT.decode(this.tokens.accessToken)) &&
+                                    !MiscMethods.checkIfJwtIsExpired(JWT.decode(this.tokens.refreshToken))
+                    ) {
+                        // get new access token w/ refresh token
+                        this.tokens.accessToken = getNewAccessToken();
+                        return;
+                    }
+                }
             }
+            // Get new tokens and store them in the service attributes
+            this.tokens = getNewTokens();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
 
-        // Get new tokens and store them in the service attributes
-        this.tokens = getNewTokens();
-
+    private <T> Optional<T> sendRequest(HttpRequest request, Class<T> clazz) throws IOException, InterruptedException {
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() == 404 || response.statusCode() == 500) {
+            return Optional.empty();
+        } else {
+            return Optional.of(objectMapper.readValue(response.body(), clazz));
+        }
     }
 
     public ResponseDto<CarPriceDto[]> getModelBasePrices(Boolean usado, Integer codia) {
-
         try {
-            HttpRequest pricesReq;
-            setInfoAutoTokens();
+            // Try to get prices with the current access token
+            if (this.tokens != null && this.tokens.accessToken != null) {
+                String endpoint = ControllerConstants.INFOAUTO_BASE_URI + "/models/" + codia;
+                if (usado) {
+                    endpoint += "/prices/";
+                } else {
+                    endpoint += "/list_price";
+                }
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(endpoint))
+                        .header("Authorization", "Bearer " + this.tokens.accessToken)
+                        .GET()
+                        .build();
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
 
-            CarPriceDto[] detailedCarInfo;
+                    if (usado) {
+                        CarPriceDto[] prices = objectMapper.readValue(response.body(), CarPriceDto[].class);
+                        return new ResponseDto<>(HttpStatus.OK, "", prices);
+                    } else {
+                        CarPriceDto price = objectMapper.readValue(response.body(), CarPriceDto.class);
+                        return new ResponseDto<>(HttpStatus.OK, "", new CarPriceDto[] { price });
+                    }
 
-            if (usado) {
-
-                // Create request object
-                pricesReq = HttpRequest.newBuilder().uri(URI.create(ControllerConstants.INFOAUTO_BASE_URI + "/models/" + codia + "/prices/")).header("Authorization", "Bearer " + this.tokens.accessToken).GET().build();
-
-                HttpResponse<String> pricesResponse = client.send(pricesReq, HttpResponse.BodyHandlers.ofString());
-
-                if (pricesResponse.statusCode() == 404 || pricesResponse.statusCode() == 500) {
+                } else {
                     return new ResponseDto<>(HttpStatus.NOT_FOUND, "", null);
                 }
-                detailedCarInfo = objectMapper.readValue(pricesResponse.body(), CarPriceDto[].class);
-
-            } else {
-                // Create request object
-                pricesReq = HttpRequest.newBuilder().uri(URI.create(ControllerConstants.INFOAUTO_BASE_URI + "/models/" + codia + "/list_price")).header("Authorization", "Bearer " + this.tokens.accessToken).GET().build();
-
-
-                HttpResponse<String> pricesResponse = client.send(pricesReq, HttpResponse.BodyHandlers.ofString());
-
-                if (pricesResponse.statusCode() == 404 || pricesResponse.statusCode() == 500) {
-                    return new ResponseDto<>(HttpStatus.NOT_FOUND, "", null);
-                }
-
-
-                CarPriceDto price = objectMapper.readValue(pricesResponse.body(), CarPriceDto.class);
-                ArrayList<CarPriceDto> carPrices = new ArrayList<>();
-                carPrices.add(price);
-
-                // Crear un nuevo array de CarPriceDto con la misma longitud que la ArrayList
-                CarPriceDto[] carPriceArray = new CarPriceDto[carPrices.size()];
-
-                // Copiar los elementos de la ArrayList al array
-                carPrices.toArray(carPriceArray);
-
-                detailedCarInfo = carPriceArray;
-
             }
 
-            return new ResponseDto<>(HttpStatus.ACCEPTED, "", detailedCarInfo);
+            // Try to refresh tokens if the access token has expired
+            if (this.tokens != null && MiscMethods.checkIfJwtIsExpired(JWT.decode(this.tokens.accessToken))) {
+                this.tokens.accessToken = getNewAccessToken();
+            }
+
+            // Try to get new tokens and then get prices with the new access token
+            if (this.tokens == null || this.tokens.accessToken == null) {
+                setInfoAutoTokens();
+            }
+            if (this.tokens != null && this.tokens.accessToken != null) {
+                return getModelBasePrices(usado, codia);
+            } else {
+                return new ResponseDto<>(HttpStatus.NOT_FOUND, "", null);
+            }
 
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR, e.toString(), null);
         }
     }
 
+
     public ResponseDto<CarDetailsDto> getCarDetails(Integer codia) throws RuntimeException, IOException, InterruptedException {
 
         try {
-            setInfoAutoTokens();
+            this.setInfoAutoTokens();
 
             // Create request object
             HttpRequest featuresRequests = HttpRequest.newBuilder().uri(URI.create(ControllerConstants.INFOAUTO_BASE_URI + "/models/" + codia + "/features/")).header("Authorization", "Bearer " + this.tokens.accessToken).GET().build();
