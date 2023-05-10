@@ -115,8 +115,8 @@ public class VehicleController {
             responseDto = this.infoAutoService.getModelBasePrices(true, codia);
         }
 
-        if (responseDto.getStatus() == HttpStatus.ACCEPTED) {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseDto);
+        if (responseDto.getStatus() == HttpStatus.OK) {
+            return ResponseEntity.status(HttpStatus.OK).body(responseDto);
         }
 
         if (responseDto.getStatus() == HttpStatus.NOT_FOUND) {
