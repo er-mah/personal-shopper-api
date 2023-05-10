@@ -1,6 +1,7 @@
 package com.techmo.personalshopper.controller;
 
 import com.techmo.personalshopper.dto.infoAuto.CarDetailsDto;
+import com.techmo.personalshopper.dto.infoAuto.CarPriceDto;
 import com.techmo.personalshopper.service.InfoAutoService;
 import com.techmo.personalshopper.service.TechMoService;
 import com.techmo.personalshopper.service.VehicleService;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 @CrossOrigin("*")
 @Validated
@@ -100,6 +102,25 @@ public class VehicleController {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseDto);
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
+    }
+
+
+
+    @GetMapping("/prices/{vehicleType}/{codia}/details")
+    public ResponseEntity<ResponseDto<CarPriceDto[]>> getPrice(@PathVariable("codia") Integer codia, @PathVariable("vehicleType") String vehicleType) throws IOException, InterruptedException {
+        ResponseDto<CarPriceDto[]> responseDto;
+        if (Objects.equals(vehicleType, "new-vehicle")) {
+            responseDto = this.infoAutoService.getModelBasePrices(false, codia);
+        } else {
+            responseDto = this.infoAutoService.getModelBasePrices(true, codia);
+        }
+
+        if (responseDto.getStatus() == HttpStatus.ACCEPTED) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseDto);
+        }
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
+
     }
 
 }

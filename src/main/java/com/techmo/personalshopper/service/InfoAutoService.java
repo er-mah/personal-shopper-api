@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techmo.personalshopper.dto.ResponseDto;
 import com.techmo.personalshopper.dto.infoAuto.*;
-import com.techmo.personalshopper.dto.infoAuto.*;
 import com.techmo.personalshopper.mapper.CarAttributeMapper;
 import com.techmo.personalshopper.util.MiscMethods;
 import com.techmo.personalshopper.util.ControllerConstants;
@@ -93,6 +92,59 @@ public class InfoAutoService {
         // Get new tokens and store them in the service attributes
         this.tokens = getNewTokens();
 
+    }
+
+    public ResponseDto<CarPriceDto[]> getModelBasePrices(Boolean usado, Integer codia) {
+
+        try {
+            HttpRequest pricesReq;
+            setInfoAutoTokens();
+
+            CarPriceDto[] detailedCarInfo;
+
+            if (usado) {
+
+                // Create request object
+                pricesReq = HttpRequest.newBuilder().uri(URI.create(ControllerConstants.INFOAUTO_BASE_URI + "/models/" + codia + "/prices/")).header("Authorization", "Bearer " + this.tokens.accessToken).GET().build();
+
+                HttpResponse<String> pricesResponse = client.send(pricesReq, HttpResponse.BodyHandlers.ofString());
+
+                if (pricesResponse.statusCode() == 404 || pricesResponse.statusCode() == 500) {
+                    return new ResponseDto<>(HttpStatus.NOT_FOUND, "", null);
+                }
+                detailedCarInfo = objectMapper.readValue(pricesResponse.body(), CarPriceDto[].class);
+
+            } else {
+                // Create request object
+                pricesReq = HttpRequest.newBuilder().uri(URI.create(ControllerConstants.INFOAUTO_BASE_URI + "/models/" + codia + "/list_price")).header("Authorization", "Bearer " + this.tokens.accessToken).GET().build();
+
+
+                HttpResponse<String> pricesResponse = client.send(pricesReq, HttpResponse.BodyHandlers.ofString());
+
+                if (pricesResponse.statusCode() == 404 || pricesResponse.statusCode() == 500) {
+                    return new ResponseDto<>(HttpStatus.NOT_FOUND, "", null);
+                }
+
+
+                CarPriceDto price = objectMapper.readValue(pricesResponse.body(), CarPriceDto.class);
+                ArrayList<CarPriceDto> carPrices = new ArrayList<>();
+                carPrices.add(price);
+
+                // Crear un nuevo array de CarPriceDto con la misma longitud que la ArrayList
+                CarPriceDto[] carPriceArray = new CarPriceDto[carPrices.size()];
+
+                // Copiar los elementos de la ArrayList al array
+                carPrices.toArray(carPriceArray);
+
+                detailedCarInfo = carPriceArray;
+
+            }
+
+            return new ResponseDto<>(HttpStatus.ACCEPTED, "", detailedCarInfo);
+
+        } catch (Exception e) {
+            return new ResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR, e.toString(), null);
+        }
     }
 
     public ResponseDto<CarDetailsDto> getCarDetails(Integer codia) throws RuntimeException, IOException, InterruptedException {
